@@ -1,0 +1,56 @@
+﻿<head>
+    <title>Proxy Console</title>
+    <style type="text/css">
+        samp {
+            height: 400px;
+            overflow: auto;
+            background: #000;
+            border: 3px groove #ccc;
+            color: #ccc;
+            display: block;
+            padding: 5px;
+            width: 100%;
+        }
+    </style>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="*"></script>
+</head>
+<body style="background-color: #f1eded;">
+
+        <!-- Fixed navbar -->
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+            <a class="navbar-brand" href="/console">HTTP Proxy</a>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Console <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item  active">
+                        <a class="nav-link" href="info">Info</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    <br />
+    <div class="row">
+        <div class="col-sm">
+            <h4>Filter List</h4>
+            <table class="table"></table>
+        </div>
+        <div class="col-sm">
+            
+        </div>
+    </div>
+
+    <script>
+        //Make a HTTP Get for Filter Data on page load
+        $.get("/filter?get", function (data) {
+            if (data) {
+                $(".table").html(data);
+            }
+            else {
+                $(".table").html("No Entries in the Filter. \"Use add-filter url\" to block a site.");
+            }
+        });
+    </script>
+</body>

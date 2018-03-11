@@ -1,0 +1,69 @@
+﻿<head>
+    <title>Proxy Console</title>
+    <style type="text/css">
+        samp {
+            height: 400px;
+            overflow: auto;
+            background: #000;
+            border: 3px groove #ccc;
+            color: #ccc;
+            display: block;
+            padding: 5px;
+            width: 100%;
+        }
+    </style>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="*"></script>
+</head>
+<body style="background-color: #f1eded;">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <a class="navbar-brand" href="/">HTTP Proxy</a>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Console <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="info">Info</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    
+    <br>
+    <p><samp id="console"></samp></p>
+    <input id="text" type="text" style="width:50%" />
+    <input class="btn btn-primary" id="btnSubmit" type="submit" value="Send" disabled />
+    <script>
+        //Get the proxy path for WebSocket connection
+        var tcp = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+        var host = window.location.hostname;
+        var path = ':8080';
+        var consoleSocket = new WebSocket(tcp + host + path);
+        //When the Proxy pushes a message, preprend it to the console
+        consoleSocket.onmessage = function (event) {
+            $('#console').prepend(event.data + "<br>");
+        }
+        //On Error, Alert the user and turn the Send button red + disabled
+        consoleSocket.onerror = function (event) {
+            $("#btnSubmit").attr('class', 'btn btn-danger');
+            $('#status').html("Status: Failed to Connect");
+            $("#btnSubmit").prop('disabled', true);
+        }
+        //On Open, Alert the user and unlock the Send button, allow the server to send commands
+        consoleSocket.onopen = function (event) {
+            $('#status').html("Status: Connected");
+            $("#btnSubmit").prop('disabled', false);
+            $("#btnSubmit").click(function () {
+                consoleSocket.send($("#text").val());
+
+            });
+        };
+        //OnClose, show that we've disconnected and lock the send button
+        consoleSocket.onclose = function () {
+            $("#btnSubmit").attr('class', 'btn btn-danger');
+            $('#status').html("Status: Disconnected");
+            $("#btnSubmit").prop('disabled', true);
+        }
+    </script>
+</body>
